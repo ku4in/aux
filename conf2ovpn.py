@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-Simple script for combining OpenVPN config files into one .ovpn file
+Simple script for concatenation OpenVPN .conf files into one .ovpn file
 '''
 
 import os
