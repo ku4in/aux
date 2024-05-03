@@ -1,3 +1,9 @@
+#!/bin/bash
+
+# This script sets two pairs (TCP + UDP) OpenVPN servers and two tun2socks instances.
+# Traffic from one OpenVPN server is routed through one proxy via tun2socks and traffic
+# from second OpenVPN server is routed through second proxy in the same manner.
+
 apt update && apt upgrade
 apt install -y curl openvpn easy-rsa net-tools zip python3
 # reboot
