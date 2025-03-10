@@ -19,10 +19,9 @@ x-ui
 
 
 # Install Wireguard panel
-bash <(curl -sSL https://get.docker.com)
-exit # not from this script but from docker script
+curl -sSL https://get.docker.com | sh
 usermod -aG docker $(whoami)
-newgrp docker
+
 host_ip=`curl 2ip.ru`
 
 echo
