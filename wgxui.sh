@@ -8,7 +8,7 @@ re_num='^[0-9]+$'
 
 apt update
 DEBIAN_FRONTEND=noninteractive apt -y upgrade
-apt install apache2-utils
+apt install -y apache2-utils
 
 # Install 3x-ui panel
 bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
