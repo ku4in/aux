@@ -4,7 +4,7 @@ apt update
 DEBIAN_FRONTEND=noninteractive apt -y upgrade
 
 # Install Wireguard panel
-curl -sSL https://get.docker.com | sh
+bash <(curl -sSL https://get.docker.com)
 usermod -aG docker $(whoami)
 newgrp docker
 host_ip=`curl 2ip.ru`
