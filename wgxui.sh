@@ -38,11 +38,11 @@ wg_passwd_hash=`htpasswd -bnBC 12 "" $wg_passwd | tr -d ':\n' | sed 's/$2y/$2a/'
 
 docker run -d --name=wg-easy -e LANG=en -e WG_HOST=$host_ip \
        -e PASSWORD_HASH=$wg_passwd_hash \
-       -e PORT=51821 -e WG_PORT=$WG_PORT -e WG_DEFAULT_ADDRESS=10.10.10.x -e WG_ALLOWED_IPS=10.10.10.0/24 \
+       -e PORT=$WG_PANEL_PORT -e WG_PORT=$WG_PORT -e WG_DEFAULT_ADDRESS=10.10.10.x -e WG_ALLOWED_IPS=10.10.10.0/24 \
        -e WG_POST_UP='iptables -t nat -A POSTROUTING -s 172.17.0.0/16 -o wg0 -j MASQUERADE' \
        -e WG_PRE_DOWN='iptables -t nat -D POSTROUTING -s 172.17.0.0/16 -o wg0 -j MASQUERADE' \
        -e WG_PERSISTENT_KEEPALIVE=25 -e UI_TRAFFIC_STATS=true -e UI_CHART_TYPE=2 \
-       -v ~/.wg-easy:/etc/wireguard -p $WG_PORT:$WG_PORT/udp -p 51821:51821/tcp --cap-add=NET_ADMIN --cap-add=SYS_MODULE \
+       -v ~/.wg-easy:/etc/wireguard -p $WG_PORT:$WG_PORT/udp -p $WG_PANEL_PORT:$WG_PANEL_PORT/tcp --cap-add=NET_ADMIN --cap-add=SYS_MODULE \
        --sysctl="net.ipv4.conf.all.src_valid_mark=1" --sysctl="net.ipv4.ip_forward=1" --restart unless-stopped \
        ghcr.io/wg-easy/wg-easy
 
