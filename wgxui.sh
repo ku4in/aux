@@ -55,6 +55,7 @@ sleep 10
 ip r add 10.10.10.0/24 via 172.17.0.2 dev docker0
 exit 0
 EOF
+chmod +x /etc/rc.local
 
 echo
 read -p "Setup SSL for WG panel? [y/N]: " option
