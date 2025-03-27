@@ -4,7 +4,7 @@ OVPN_PANEL_PORT=8080        # Do not change this port, it is used by OpenVPN UI
 OVPN_PANEL_SSL_PORT=44443
 
 banner () {
-	if [ -z "$1" ]; then pad=" "; else pad=""; fi
+	if [ -z "$1" ]; then pad=" "; else OVPN_PANEL_SSL_PORT=OVPN_PANEL_PORT; pad=""; fi
 	echo "****************************************************************"
 	echo "*                                                              *"
 	echo "*             INSTALLATION COMPLETED SUCCESSFULLY!             *"
