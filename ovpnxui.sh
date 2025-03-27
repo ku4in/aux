@@ -5,29 +5,30 @@ OVPN_PANEL_SSL_PORT=44443
 
 banner () {
 	if [ -z "$1" ]; then pad=" "; else OVPN_PANEL_SSL_PORT=OVPN_PANEL_PORT; pad=""; fi
-	echo "****************************************************************"
-	echo "*                                                              *"
-	echo "*             INSTALLATION COMPLETED SUCCESSFULLY!             *"
-	echo "*                                                              *"
-	echo "* Your 3x-ui panel parameters:                                 *"
-	echo "*                                                              *"
+	echo "**************************************************************************"
+	echo "*                                                                        *"
+	echo "*                  INSTALLATION COMPLETED SUCCESSFULLY!                  *"
+	echo "*                                                                        *"
+	echo "* Your 3x-ui panel parameters:                                           *"
+	echo "*                                                                        *"
 	while read -r line; do
-		printf "* %-60s *\n" "$line"
+		printf "* %-70s *\n" "$line"
 	done < <(x-ui <<< "10" | tail -5 | sed -r "s/\x1B\[[0-9;]*[mK]//g")
-	echo "*                                                              *"
-	echo "*                                                              *"
-	echo "* Your OpenVPN panel parameters:                               *"
-	echo "*                                                              *"
-	printf "* username: %-50s *\n" "$ovpn_user"
-	printf "* password: %-50s *\n" "$ovpn_passwd"
-	printf "* Access URL: http%s://%-40s %s*\n" "$1" "$host_name:$OVPN_PANEL_SSL_PORT" "$pad"
-	echo "*                                                              *"
-	echo "****************************************************************"
+	echo "*                                                                        *"
+	echo "*                                                                        *"
+	echo "* Your OpenVPN panel parameters:                                         *"
+	echo "*                                                                        *"
+	printf "* username: %-60s *\n" "$ovpn_user"
+	printf "* password: %-60s *\n" "$ovpn_passwd"
+	printf "* Access URL: http%s://%-50s %s*\n" "$1" "$host_name:$OVPN_PANEL_SSL_PORT" "$pad"
+	echo "*                                                                        *"
+	echo "**************************************************************************"
 }
 
 apt update
 DEBIAN_FRONTEND=noninteractive apt -y upgrade
-apt install -y docker.io docker-compose socat
+apt install -y docker.io docker-compose-v2 socat sqlite3
+
 
 
 # Install 3x-ui panel
@@ -59,6 +60,7 @@ sed -i "/OPENVPN_ADMIN_PASSWORD/s/=.*/=$ovpn_passwd/" docker-compose.yml
 # Set firewall inside OVPN container
 echo "iptables -t nat -A POSTROUTING -s 172.18.0.0/16 -o tun0 -j MASQUERADE" >> fw-rules.sh
 
+rm -rf server.conf
 docker-compose up -d
 
 # Set parameters in DB
@@ -72,10 +74,13 @@ UPDATE o_v_client_config SET redirect_gateway='# redirect-gateway def1'; " | sql
 
 
 # Restart containers to apply new config
-rm -f server.conf
 echo "Restarting containers to apply custom configs. Please wait..."
-docker restart openvpn-ui
-docker restart openvpn
+docker stop openvpn-ui
+docker stop openvpn
+rm -rf server.conf
+docker start openvpn-ui
+sleep 2
+docker start openvpn
 
 cat > /etc/rc.local << EOF
 #!/bin/bash
