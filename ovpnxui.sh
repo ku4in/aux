@@ -63,6 +63,12 @@ echo "iptables -t nat -A POSTROUTING -s 172.18.0.0/16 -o tun0 -j MASQUERADE" >> 
 rm -rf server.conf
 docker-compose up -d
 
+
+# Restart containers to apply new config
+echo "Restarting containers to apply custom configs. Please wait..."
+docker stop openvpn-ui
+docker stop openvpn
+
 # Set parameters in DB
 host_ip=`curl 2ip.ru`
 echo "
@@ -72,12 +78,8 @@ UPDATE o_v_config SET push_route='# route 10.0.60.0 255.255.255.0';
 UPDATE o_v_client_config SET server_address='$host_ip';
 UPDATE o_v_client_config SET redirect_gateway='# redirect-gateway def1'; " | sqlite3 db/data.db
 
-
-# Restart containers to apply new config
-echo "Restarting containers to apply custom configs. Please wait..."
-docker stop openvpn-ui
-docker stop openvpn
 rm -rf server.conf
+
 docker start openvpn-ui
 sleep 2
 docker start openvpn
