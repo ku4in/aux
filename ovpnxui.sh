@@ -4,7 +4,7 @@ OVPN_PANEL_PORT=8080        # Do not change this port, it is used by OpenVPN UI
 OVPN_PANEL_SSL_PORT=44443
 
 banner () {
-	if [ -z "$1" ]; then pad=" "; else OVPN_PANEL_SSL_PORT=OVPN_PANEL_PORT; pad=""; fi
+	if [ -z "$1" ]; then pad=" "; OVPN_PANEL_SSL_PORT=$OVPN_PANEL_PORT; else pad=""; fi
 	echo "**************************************************************************"
 	echo "*                                                                        *"
 	echo "*                  INSTALLATION COMPLETED SUCCESSFULLY!                  *"
@@ -28,7 +28,6 @@ banner () {
 apt update
 DEBIAN_FRONTEND=noninteractive apt -y upgrade
 apt install -y docker.io docker-compose-v2 socat sqlite3
-
 
 
 # Install 3x-ui panel
@@ -60,14 +59,12 @@ sed -i "/OPENVPN_ADMIN_PASSWORD/s/=.*/=$ovpn_passwd/" docker-compose.yml
 # Set firewall inside OVPN container
 echo "iptables -t nat -A POSTROUTING -s 172.18.0.0/16 -o tun0 -j MASQUERADE" >> fw-rules.sh
 
-rm -rf server.conf
-docker-compose up -d
-
+docker compose up -d
 
 # Restart containers to apply new config
 echo "Restarting containers to apply custom configs. Please wait..."
-docker stop openvpn-ui
 docker stop openvpn
+docker stop openvpn-ui
 
 # Set parameters in DB
 host_ip=`curl 2ip.ru`
@@ -81,7 +78,7 @@ UPDATE o_v_client_config SET redirect_gateway='# redirect-gateway def1'; " | sql
 rm -rf server.conf
 
 docker start openvpn-ui
-sleep 2
+while [ ! -s "./server.conf" ]; do sleep 1; echo "Waiting for openvpn-ui to restart"; done
 docker start openvpn
 
 cat > /etc/rc.local << EOF
